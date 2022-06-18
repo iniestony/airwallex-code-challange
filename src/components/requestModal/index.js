@@ -60,7 +60,7 @@ function InvitationRequestModal(props) {
         if (props.handleSuccess) props.handleSuccess();
       } else {
         setServerError(true);
-        setServerErrorMsg((res && res.statusText) || '');
+        setServerErrorMsg((res && res.data && res.data.errorMessage) || '');
         setInSubmit(false);
       }
     } catch (e) {
