@@ -10,5 +10,5 @@ export const validateEmail = (v) => {
 };
 
 export const validateConfirmEmail = (v, targetV) => {
-  return !!v && v === targetV;
+  return !!v && v === targetV && validateEmail(v);
 };

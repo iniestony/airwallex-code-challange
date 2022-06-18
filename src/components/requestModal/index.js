@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import styles from './index.module.scss';
 import { validateFullName, validateEmail, validateConfirmEmail } from '../../utils/validation';
+import { requestInvitation } from '../../services/invitation';
 
 function InvitationRequestModal(props) {
   const [fullName, setFullName] = useState('');
@@ -12,6 +13,10 @@ function InvitationRequestModal(props) {
     ve: true,
     vc: true
   });
+
+  const [inSubmit, setInSubmit] = useState(false);
+  const [serverError, setServerError] = useState(false);
+  const [serverErrorMsg, setServerErrorMsg] = useState('');
   
   const handleFullNameChange = useCallback((e) => {
     const v = e.target.value;
@@ -37,12 +42,33 @@ function InvitationRequestModal(props) {
     return vf && ve && vc;
   }, [fullName, email, confirmEmail]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
+    if (inSubmit) return;
+
+    setServerError(false);
+    setServerErrorMsg('');
+
     const validationResult = validateForm();
     if (!validationResult) return;
 
-    if (props.hideModal) props.hideModal();
-  }, [validateForm, props]);
+    setInSubmit(true);
+    
+    try {
+      const res = await requestInvitation(fullName, email);
+      if (res && res.status === 200) {
+        setInSubmit(false);
+        if (props.handleSuccess) props.handleSuccess();
+      } else {
+        setServerError(true);
+        setServerErrorMsg((res && res.statusText) || '');
+        setInSubmit(false);
+      }
+    } catch (e) {
+      setServerError(true);
+      setServerErrorMsg('Unknown error from server.');
+      setInSubmit(false);
+    }
+  }, [validateForm, props, inSubmit, fullName, email]);
 
   return (
     <div className={styles.requestModal}>
@@ -82,9 +108,13 @@ function InvitationRequestModal(props) {
         key="confirmEmail"
       />
 
-      <div className={styles.btn} onClick={handleSubmit}>
-        Send
+      <div className={`${styles.btn}${!inSubmit ? '' : ` ${styles.disabled}`}`} onClick={handleSubmit}>
+        {inSubmit ? 'Sending, please wait...' : 'Send'}
       </div>
+
+      {serverError ? (
+        <div className={styles.errorMsg}>{serverErrorMsg}</div>
+      ) : null}
     </div>
   );
 }

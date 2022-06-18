@@ -18,7 +18,8 @@ function InvitationContent() {
     setIsShowRequestModal(false);
   }, []);
 
-  const showConfirmModal = useCallback(() => {
+  const successRequestModal = useCallback(() => {
+    setIsShowRequestModal(false);
     setIsShowConfirmModal(true);
   }, []);
 
@@ -46,13 +47,13 @@ function InvitationContent() {
 
       {isShowRequestModal ? (
         <InvitationModal rootContainer={modalRootContainer} hideModal={hideRequestModal}>
-          <InvitationRequestModal hideModal={hideRequestModal} />
+          <InvitationRequestModal handleSuccess={successRequestModal} />
         </InvitationModal>
       ) : null}
 
       {isShowConfirmModal ? (
         <InvitationModal rootContainer={modalRootContainer} hideModal={hideConfirmModal}>
-          <InvitationConfirmModal hideModal={hideConfirmModal} />
+          <InvitationConfirmModal handleSuccess={hideConfirmModal} />
         </InvitationModal>
       ) : null}
     </div>

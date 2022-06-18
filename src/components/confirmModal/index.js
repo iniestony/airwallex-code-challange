@@ -17,7 +17,7 @@ function InvitationConfirmModal(props) {
         Broccoli & Co. when we launch.
       </div>
 
-      <div className={styles.btn} onClick={props.hideModal}>
+      <div className={styles.btn} onClick={props.handleSuccess}>
         OK
       </div>
     </div>
